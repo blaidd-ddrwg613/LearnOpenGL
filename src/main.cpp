@@ -5,6 +5,7 @@
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
+#include "stb_image/stb_image.h"
 
 void ProcessEvents(GLFWwindow* window);
 
