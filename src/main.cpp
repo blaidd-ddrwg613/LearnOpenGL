@@ -2,6 +2,9 @@
 
 #include "Window.h"
 #include "Shader.h"
+#include "VAO.h"
+#include "VBO.h"
+#include "EBO.h"
 
 void ProcessEvents(GLFWwindow* window);
 
@@ -31,30 +34,18 @@ int main()
         1, 2, 3    // second triangle
     };
 
-    // Create our VBO
-    unsigned int VBO, VAO, EBO;
-    glGenBuffers(1, &VBO);
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &EBO);
+    VAO VAO1;
+    VAO1.Bind();
 
-    // Bind the VAO to store the related VBO Calls
-    glBindVertexArray(VAO);
-    // Bind out VBO to openGL GL_ARRAY_BUFFER
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // Give our Buffer Data and tell the gpu how to manage it
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // Bind our EBO to openGL GL_ELEMENT_ARRAY_BUFFER
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // Give the Buffer the Indices Data
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    // Tell OpenGL how to interpret out vertex data
-    // Position Attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    // Enable to vertex attribute giving its location (in the shader layout (location = 0) in vec3 aPos;)
-    glEnableVertexAttribArray(0);
-    // Color Attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    VBO VBO1(vertices, sizeof(vertices));
+
+    // Links VBO attributes such as coordinates and colors to VAO
+    VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+    VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    // Unbind all to prevent accidentally modifying them
+    VAO1.Unbind();
+    VBO1.Unbind();
 
     // uncomment this call to draw in wireframe polygons.
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -69,10 +60,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.use();
-        glBindVertexArray(VAO);
-        // glDrawArrays(GL_TRIANGLES, 0 , 3);
-        // instead if glDrawArrays we use glDrawElements When using an EBO
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        VAO1.Bind();
+        glDrawArrays(GL_TRIANGLES, 0 , 3);
         // Swap Buffers and Poll Events
         glfwSwapBuffers(window.m_Window);
         glfwPollEvents();
