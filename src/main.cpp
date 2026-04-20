@@ -69,16 +69,28 @@ int main()
     glDeleteShader(fragmentShader);
 #pragma endregion
 
+    // float vertices[] = {
+    //     -0.5f, -0.5f, 0.0f,
+    //      0.5f, -0.5f, 0.0f,
+    //      0.0f,  0.5f, 0.0f
+    // };
+
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+        0.5f,  0.5f, 0.0f,  // top right
+        0.5f, -0.5f, 0.0f,  // bottom right
+       -0.5f, -0.5f, 0.0f,  // bottom left
+       -0.5f,  0.5f, 0.0f   // top left
+   };
+    unsigned int indices[] = {  // note that we start from 0!
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second triangle
     };
 
     // Create our VBO
-    unsigned int VBO, VAO;
+    unsigned int VBO, VAO, EBO;
     glGenBuffers(1, &VBO);
     glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &EBO);
 
     // Bind the VAO to store the related VBO Calls
     glBindVertexArray(VAO);
@@ -86,13 +98,17 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // Give our Buffer Data and tell the gpu how to manage it
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // Bind our EBO to openGL GL_ELEMENT_ARRAY_BUFFER
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // Give the Buffer the Indices Data
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     // Tell OpenGL how to interpret out vertex data
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     // Enable to vertex attribute giving its location (in the shader layout (location = 0) in vec3 aPos;)
     glEnableVertexAttribArray(0);
 
     // uncomment this call to draw in wireframe polygons.
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     while (!glfwWindowShouldClose(window.m_Window))
     {
@@ -105,13 +121,13 @@ int main()
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0 , 3);
-
+        // glDrawArrays(GL_TRIANGLES, 0 , 3);
+        // instead if glDrawArrays we use glDrawElements When using an EBO
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // Swap Buffers and Poll Events
         glfwSwapBuffers(window.m_Window);
         glfwPollEvents();
     }
-
 
     glfwTerminate();
     return 0;
