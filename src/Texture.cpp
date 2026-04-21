@@ -1,6 +1,6 @@
 #include "Texture.h"
 
-Texture::Texture(const char* image, GLenum slot)
+Texture::Texture(const char* image) : texShader("default.vert", "default.frag")
 {
 	// Build the actual image path.
 	std::string imagePath = TexturePath + std::string(image);
@@ -25,7 +25,7 @@ Texture::Texture(const char* image, GLenum slot)
 	// Generates an OpenGL texture object
 	glGenTextures(1, &ID);
 	// Assigns the texture to a Texture Unit
-	glActiveTexture(slot);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, ID);
 
 	// Configures the type of algorithm that is used to make the image smaller or bigger
@@ -50,6 +50,35 @@ Texture::Texture(const char* image, GLenum slot)
 
 	// Unbinds the OpenGL Texture object so that it can't accidentally be modified
 	glBindTexture(GL_TEXTURE_2D, 0);
+	texUnit(texShader, "ourTexture", 0);
+}
+
+int Texture::SetShader(Shader shader)
+{
+	if (shader.ID != 0)
+	{
+		texShader = shader;
+		texUnit(texShader, "ourTexture", 0);
+		return 0;
+	} else
+	{
+		std::cout << "ERROR::Must Use A valid Shader" << std::endl;
+		return -1;
+	}
+}
+
+int Texture::SetTexturePath(std::string path)
+{
+	if (!path.empty())
+	{
+		TexturePath = std::string(RESOURCES_PATH) + path;
+		return 0;
+	}
+	else
+	{
+		std::cout << "ERROR::INVALID TEXTURE PATH" << std::endl;
+		return -1;
+	}
 }
 
 void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)

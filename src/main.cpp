@@ -20,9 +20,9 @@ int main()
     Window window( userSettings.width, userSettings.height, userSettings.title.c_str());
 
     Shader shader("default.vert", "default.frag");
+    Shader colorShader("default.vert", "color.frag");
 
-    Texture container("container.jpg", GL_TEXTURE0);
-    container.texUnit(shader, "ourTexture", 0);
+    Texture container("container.jpg");
 
     float vertices[] = {
         // positions          // colors           // texture coords
@@ -60,7 +60,6 @@ int main()
         glClearColor(0.39, 0.58, 0.93, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        shader.use();
         container.Bind();
         VAO1.Bind();
         // glDrawArrays(GL_TRIANGLES, 0 , 3);
