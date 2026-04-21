@@ -5,7 +5,7 @@
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
-#include "stb_image/stb_image.h"
+#include "Texture.h"
 
 void ProcessEvents(GLFWwindow* window);
 
@@ -19,36 +19,10 @@ int main()
 {
     Window window( userSettings.width, userSettings.height, userSettings.title.c_str());
 
-    const char* vertexPath = RESOURCES_PATH"shaders/default.vert";
-    const char* fragmentPath = RESOURCES_PATH"shaders/default.frag";
+    Shader shader("default.vert", "default.frag");
 
-    Shader shader(vertexPath, fragmentPath);
-
-    // load and create a texture
-    // -------------------------
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-    // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load(RESOURCES_PATH"textures/wall.jpg", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
+    Texture container("container.jpg", GL_TEXTURE0);
+    container.texUnit(shader, "ourTexture", 0);
 
     float vertices[] = {
         // positions          // colors           // texture coords
@@ -87,7 +61,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.use();
-        glBindTexture(GL_TEXTURE_2D, texture);
+        container.Bind();
         VAO1.Bind();
         // glDrawArrays(GL_TRIANGLES, 0 , 3);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
