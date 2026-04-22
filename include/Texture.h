@@ -12,8 +12,7 @@ private:
     // Relative Texture Path resources/textures/
     std::string TexturePath = std::string(RESOURCES_PATH) + "textures/";
     Shader texShader;
-    // Assigns a texture unit to a texture
-    void texUnit(Shader& shader, const char* uniform, GLuint unit);
+
 
 public:
     unsigned int ID;
@@ -22,6 +21,8 @@ public:
 
     int SetShader(Shader shader);
     int SetTexturePath(std::string path);
+    // Assigns a texture unit to a texture
+    void texUnit(Shader& shader, const char* uniform, GLuint unit);
 
     // Binds a texture
     void Bind();

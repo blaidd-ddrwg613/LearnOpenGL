@@ -33,6 +33,7 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_subdirectory(thirdparty/glfw-3.4)
 add_subdirectory(thirdparty/glad)
 add_subdirectory(thirdparty/stb_image)
+add_subdirectory(thirdparty/glm)
 
 # MY_SOURCES is defined to be a list of all the source files for my game
 # DON'T ADD THE SOURCES BY HAND, they are already added with this macro
@@ -81,4 +82,4 @@ target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURC
 #	glad stb_image stb_truetype gl2d raudio imgui enet)
 
 #enet not working yet on linux for some reason
-target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE glfw glad stb_image)
+target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE glfw glad stb_image glm)
