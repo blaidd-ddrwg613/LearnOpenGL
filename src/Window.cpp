@@ -24,6 +24,9 @@ Window::Window(int width, int height, const char* title)
     }
 
     glfwSetFramebufferSizeCallback(m_Window, framebuffer_size_callback);
+
+    // tell GLFW to capture our mouse
+    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
