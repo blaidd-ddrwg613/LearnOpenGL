@@ -6,8 +6,13 @@
 #include "VBO.h"
 #include "EBO.h"
 #include "Texture.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 void ProcessEvents(GLFWwindow* window);
+
+
 
 struct UserSettings
 {
@@ -56,10 +61,22 @@ int main()
         // Input
         ProcessEvents(window.m_Window);
 
-        // Rendering
+
         glClearColor(0.39, 0.58, 0.93, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glm::mat4 trans = glm::mat4(1.0f);
+        // Rotate the Texture by 90 degrees on the z-axis
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        // Scale the texture by 0.5
+        trans = glm::scale(trans, glm::vec3(0.5f, -0.5f, 0.5f));
+
+        // Get the uniform location in the shader
+        unsigned int transformLoc = glGetUniformLocation(shader.ID, "transform");
+        // send the matrix data to the shader
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+        // Drawing
         container.Bind();
         VAO1.Bind();
         // glDrawArrays(GL_TRIANGLES, 0 , 3);
